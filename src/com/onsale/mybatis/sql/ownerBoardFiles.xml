@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http//mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="OwnerBoardFiles">
+		<insert id="insertOwnerFile" parameterType="OwnerFilesVO">
+			INSERT INTO TBL_OWNER_BOARD_FILE
+			(OWNER_FILE_NAME, OWNER_BOARD_NUM, OWNER_FILE_NAME_ORIGINAL)
+			VALUES (#{owner_file_name}, #{owner_board_num}, #{owner_file_name_original})
+		</insert>
+		<!-- 파일 가져오기 -->
+		<select id="getOwnerFiles" parameterType="_int" resultType="OwnerFilesVO">
+			SELECT OWNER_ FILE_NAME, OWNER_BOARD_NUM, OWNER_FILE_NAME_ORIGINAL FROM TBL_OWNER_BOARD_FILE
+			WHERE OWNER_BOARD_NUM = #{owner_board_num}
+		</select>
+		<!-- 파일 삭제 -->
+		<delete id="deleteOwnerFiles" parameterType="_int">
+			DELETE FROM TBL_OWNER_BOARD_FILE
+			WHERE OWNER_BOARD_NUM = #{owner_board_num}
+		</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

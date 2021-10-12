@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http//mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ItemReview">
+	<insert id="insertReview" parameterType="ItemReviewVO">  
+		INSERT INTO HR.TBL_ITEM_REVIEW
+		(ITEM_REVIEW_NUM, SHOPITEM_NUM, USER_EMAIL, USER_NICKNAME, ITEM_REVIEW_CONTENT, ITEM_REVIEW_DATE, ITEM_REVIEW_LIKES)
+		VALUES(ITEM_REVIEW_SEQ.NEXTVAL, ${shopitem_num}, #{user_email}, #{user_nickname}, #{item_review_content}, SYSDATE, ${item_review_likes})
+	</insert>
+	<select id="getReviewList" parameterType="_int" resultType="ItemReviewVO">
+		SELECT ITEM_REVIEW_NUM, SHOPITEM_NUM, USER_EMAIL, USER_NICKNAME, ITEM_REVIEW_DATE, ITEM_REVIEW_CONTENT, ITEM_REVIEW_LIKES FROM TBL_ITEM_REVIEW
+		WHERE SHOPITEM_NUM = #{shopitem_num} ORDER BY ITEM_REVIEW_NUM DESC
+	</select>
+	<delete id="deleteReview" parameterType="_int">
+		DELETE FROM TBL_ITEM_REVIEW
+		WHERE ITEM_REVIEW_NUM = ${review_num}
+	</delete>
+	<update id="updateReview" parameterType="ItemReviewVO">
+		UPDATE TBL_ITEM_REVIEW
+		SET ITEM_REVIEW_CONTENT = #{item_review_content}
+		WHERE ITEM_REVIEW_NUM = ${item_review_num}
+		
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

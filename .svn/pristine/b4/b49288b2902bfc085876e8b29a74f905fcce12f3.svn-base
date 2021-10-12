@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http//mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UserBoard">
+	<!-- 게시글 전체 목록 가져오기 -->
+	<select id="getUserBoardList" parameterType="map" resultType="UserBoardVO">
+		SELECT USER_BOARD_NUM, USER_NICKNAME, USER_BOARD_TITLE, USER_BOARD_CONTENT, 
+		USER_BOARD_DATE, USER_BOARD_VIEWS, USER_BOARD_LIKES
+		FROM
+			(SELECT ROWNUM R,  B. USER_BOARD_NUM, USER_NICKNAME, USER_BOARD_TITLE, USER_BOARD_CONTENT, 
+							USER_BOARD_DATE, USER_BOARD_VIEWS, USER_BOARD_LIKES 
+					FROM
+							(SELECT USER_BOARD_NUM, USER_NICKNAME, USER_BOARD_TITLE, USER_BOARD_CONTENT, 
+								USER_BOARD_DATE, USER_BOARD_VIEWS, USER_BOARD_LIKES
+							FROM TBL_USER_BOARD ORDER BY USER_BOARD_NUM DESC) B)
+							WHERE R BETWEEN ${startRow} AND ${endRow}
+	</select>
+	<!-- 해당 유저의 전체 목록 가져오기 -->
+	<select id="getMyBoardList" parameterType="string" resultType="UserBoardVO">
+		SELECT * FROM TBL_USER_BOARD
+		WHERE USER_NICKNAME = #{user_nickname}
+		ORDER BY USER_BOARD_DATE DESC
+	</select>
+	<!-- 총 게시글 수 -->
+	<select id="getUserBoardTotal" resultType="_int">
+		SELECT COUNT(USER_BOARD_NUM) FROM TBL_USER_BOARD
+	</select>
+	<!-- 해당 유저가 작성한 총 게시글 수 -->
+	<select id="getMyBoardTotal" parameterType="string" resultType="_int">
+		SELECT COUNT(USER_NICKNAME) FROM TBL_USER_BOARD
+	</select>
+	
+	<!-- 게시글 작성하기 -->
+	<insert id="insertUserBoard" parameterType="UserBoardVO">
+	INSERT INTO TBL_USER_BOARD
+	(USER_BOARD_NUM, USER_NICKNAME, USER_BOARD_TITLE, USER_BOARD_CONTENT, USER_BOARD_DATE, USER_BOARD_VIEWS, USER_BOARD_LIKES)
+	VALUES(USER_BOARD_SEQ.NEXTVAL, #{user_nickname}, #{user_board_title}, #{user_board_content}, SYSDATE, 0, 0);
+	</insert>
+	
+	<select id="getUserSeq" resultType="_int">
+		SELECT USER_BOARD_SEQ.CURRVAL FROM DUAL
+	</select>
+	<!-- 게시글 정보 -->
+	<select id="getUserDetail" parameterType="_int" resultType="UserBoardVO">
+		SELECT USER_BOARD_NUM, USER_NICKNAME, USER_BOARD_TITLE, USER_BOARD_CONTENT, 
+		USER_BOARD_DATE, USER_BOARD_VIEWS, USER_BOARD_LIKES
+		FROM TBL_USER_BOARD WHERE USER_BOARD_NUM = #{user_board_num}
+	</select>
+	<!--게시글 수정  -->
+	<update id="userUpdate" parameterType="UserBoardVO">
+		UPDATE TBL_USER_BOARD
+		SET USER_BOARD_TITLE = #{user_board_title}, USER_BOARD_CONTENT = #{user_board_content}
+		WHERE USER_BOARD_NUM = #{user_board_num}
+	</update>
+	<!-- 조회수 늘어나기 -->
+	<update id="updateUserView" parameterType="_int">
+		UPDATE TBL_USER_BOARD
+		SET USER_BOARD_VIEWS = USER_BOARD_VIEWS + 1
+		WHERE USER_BOARD_NUM = #{user_board_num}
+	</update>
+	<!-- 게시글 삭제 -->
+	<delete id="deleteUserBoard" parameterType="_int">
+		DELETE FROM TBL_USER_BOARD
+		WHERE USER_BOARD_NUM = #{user_board_num}
+	</delete>
+	
+	<!-- 유저 이메일 가져오기 -->
+	<select id="getUserEmail" parameterType="string" resultType="string">
+		SELECT USER_EMAIL FROM TBL_USER
+		WHERE USER_NICKNAME = #{user_nickname}
+	</select>
+	
+		<!-- 세션 이메일로 유저 닉네임 가져오기 -->
+	<select id="getUserNickname" parameterType="string" resultType="string">
+		SELECT USER_NICKNAME FROM TBL_USER
+		WHERE USER_EMAIL = #{user_email}
+	</select>
+	
+<!-- 댓글 -->
+	<select id="getUserReplyList" parameterType="_int" resultType="UserBoardReplyVO">
+		SELECT 	USER_REPLY_NUM, USER_BOARD_NUM, USER_REPLY_CONTENT, USER_NICKNAME
+		FROM TBL_USER_REPLY
+		WHERE USER_BOARD_NUM = #{user_board_num} ORDER BY USER_REPLY_NUM DESC
+	</select>
+	<!-- 댓글 작성 -->
+	<insert id="insertUserReply" parameterType="UserBoardReplyVO">
+		INSERT INTO TBL_USER_REPLY
+		VALUES(USER_REPLY_SEQ.NEXTVAL, #{user_board_num}, #{user_reply_content}, #{user_nickname})
+	</insert>
+	<!-- 댓글 삭제 -->
+	<delete id="deleteUserReply" parameterType="_int">
+		DELETE FROM TBL_USER_REPLY
+		WHERE USER_REPLY_NUM = #{user_reply_num}
+	</delete>
+<!-- 게시글 삭제시 댓글도 같이 삭제 -->
+	<delete id="deleteUserReplyAndBoard" parameterType="_int">
+		DELETE FROM TBL_USER_REPLY
+		WHERE USER_BOARD_NUM = #{user_board_num}
+	</delete>
+	<!-- 댓글 수정 -->
+	<update id="updateUserReply" parameterType="UserBoardReplyVO">
+	UPDATE TBL_USER_REPLY
+	SET USER_REPLY_CONTENT  = #{user_reply_content}
+	WHERE USER_REPLY_NUM  = ${user_reply_num}	
+	</update>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

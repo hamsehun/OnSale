@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http//mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserBoardFiles">
+<!-- 파일 넣기 -->
+		<insert id="insertUserFile" parameterType="UserFilesVO">
+			INSERT INTO TBL_USER_BOARD_FILE
+			(USER_BOARD_NUM, USER_FILE_NAME_ORIGINAL, USER_FILE_NAME)
+			VALUES (#{user_board_num}, #{user_file_name_original}, #{user_file_name})
+		</insert>
+		<!-- 파일 가져오기 -->
+		<select id="getUserFiles" parameterType="_int" resultType="UserFilesVO">
+			SELECT USER_BOARD_NUM, USER_FILE_NAME_ORIGINAL, USER_FILE_NAME FROM TBL_USER_BOARD_FILE
+			WHERE USER_BOARD_NUM = #{user_board_num}
+		</select>
+		<!-- 파일 삭제 -->
+		<delete id="deleteUserFiles" parameterType="_int">
+			DELETE FROM TBL_USER_BOARD_FILE
+			WHERE USER_BOARD_NUM = #{user_board_num}
+		</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

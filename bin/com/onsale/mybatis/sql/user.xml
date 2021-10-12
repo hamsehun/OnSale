@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http//mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+	
+   <!-- 회원정보 수정하기 -->
+   <!-- 비밀번호와 주소 수정 -->
+   <update id="userInfoChange" parameterType="UserVO">
+      UPDATE TBL_USER
+      <!-- SET USER_PW = #{user_pw}, USER_TEL = #{user_tel}, USER_ADDRESS = #{user_address}, USER_POSTCODE = #{user_postcode} -->
+      SET USER_PW = #{user_pw}, USER_ADDRESS = #{user_address}, USER_POSTCODE = #{user_postcode}
+      WHERE USER_EMAIL = #{user_email}
+   </update>
+   <!-- 비밀번호 수정 -->
+   <update id="userPwChange" parameterType="UserVO">
+      UPDATE TBL_USER
+      SET USER_PW = #{user_pw}
+      WHERE USER_EMAIL = #{user_email}
+   </update>
+    
+   <!-- 회원정보 수정시, 비번 중복확인 -->
+   <select id="InfoChangeCheckPw" parameterType="hashmap" resultType="_int">
+      SELECT COUNT(USER_PW) FROM TBL_USER
+      WHERE USER_EMAIL = #{user_email} AND USER_PW = #{user_pw}
+   </select>
+   
+   <!-- 회원의 모든 정보 가져오기 -->
+	<select id="getuserInfo" parameterType="string" resultType="UserVO">
+	   	SELECT USER_NUM, USER_NICKNAME, USER_NAME, USER_TEL, USER_ADDRESS, USER_POSTCODE FROM TBL_USER
+	   	WHERE USER_EMAIL = #{user_email}
+	</select>
+	
+	<select id="login_user" parameterType="map" resultType="_int">
+		SELECT COUNT(USER_NUM) FROM TBL_USER WHERE USER_EMAIL = #{user_email} AND USER_PW = #{user_pw}
+	</select>
+	
+	<select id="login_owner" parameterType="map" resultType="_int">
+		SELECT COUNT(MART_OWNER_NUM) FROM TBL_MART_OWNER WHERE MART_OWNER_EMAIL = #{mart_owner_email} AND MART_OWNER_PW = #{mart_owner_pw}
+	</select>
+	<!-- 회원가입 -->
+	<insert id="userJoin" parameterType="UserVO">
+	INSERT INTO TBL_USER
+	(USER_NUM, USER_NICKNAME, USER_EMAIL, USER_PW, USER_NAME, USER_TEL, USER_ADDRESS, USER_POSTCODE, USER_STATUS, USER_AD_AGREE)
+	VALUES(USER_SEQ.NEXTVAL, #{user_nickname}, #{user_email}, #{user_pw}, #{user_name}, #{user_tel}, #{user_address}, #{user_postcode}, 0, 1)	
+	</insert>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

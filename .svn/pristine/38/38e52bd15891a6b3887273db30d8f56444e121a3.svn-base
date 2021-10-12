@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http//mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Owner">  
+ 	<!-- 회원가입 -->
+	<!-- 오너 정보 입력 -->
+	<insert id="ownerJoin" parameterType="OwnerVO">
+INSERT INTO TBL_MART_OWNER
+(MART_OWNER_NUM, MART_OWNER_EMAIL, MART_OWNER_PW, MART_OWNER_NAME, MART_OWNER_TEL)
+VALUES(MART_OWNER_SEQ.NEXTVAL, #{mart_owner_email}, #{mart_owner_pw}, #{mart_owner_name}, #{mart_owner_tel});
+	</insert>
+	<!-- 마트 정보 입력 -->
+	<insert id="addMart" parameterType="MartVO">
+	INSERT INTO TBL_MART
+(MART_NUM, MART_OWNER_NUM, MART_BUSINESS_NUM, MART_NAME, MART_TEL, MART_ADDRESS, MART_DELEVERY, MART_COVIDFUND, MART_LEVEL, MART_COMMISSION_COST, MART_POSTCODE, MART_FILE)
+VALUES(MART_SEQ.NEXTVAL, #{mart_owner_num}, #{mart_business_num}, #{mart_name}, #{mart_tel}, #{mart_address}, #{mart_delivery}, #{mart_covidfund}, 0, 0, #{mart_postcode}, 'default_img.png');
+	</insert>
+	
+	  <!-- 사장님 정보 수정하기 -->
+   <update id="ownerInfoChange" parameterType="OwnerVO">
+      UPDATE TBL_MART_OWNER
+      SET MART_OWNER_PW = #{mart_owner_pw}, MART_OWNER_TEL = #{mart_owner_tel}
+      WHERE MART_OWNER_EMAIL = #{mart_owner_email}
+   </update>
+    
+       <!-- 비밀번호 수정 -->
+   <update id="ownerPwChange" parameterType="OwnerVO">
+      UPDATE TBL_MART_OWNER
+      SET MART_OWNER_PW = #{mart_owner_pw}
+      WHERE MART_OWNER_EMAIL = #{mart_owner_email}
+   </update>
+    
+    
+   <!-- 사장님 정보 수정시, 비번 중복확인 -->
+   <select id="ownerInfoChangeCheckPw" parameterType="hashmap" resultType="_int">
+      SELECT COUNT(MART_OWNER_PW) FROM TBL_MART_OWNER
+      WHERE MART_OWNER_EMAIL = #{mart_owner_email} AND MART_OWNER_PW = #{mart_owner_pw}
+   </select>
+   
+   <!-- 회원의 모든 정보 가져오기 -->
+	<select id="getownerInfo" parameterType="string" resultType="OwnerVO">
+	   	SELECT  MART_OWNER_NUM, MART_OWNER_EMAIL, MART_OWNER_PW, MART_OWNER_NAME, MART_OWNER_TEL FROM TBL_MART_OWNER
+	   	WHERE MART_OWNER_EMAIL = #{mart_owner_email}
+	</select>
+	
+	
+	<!-- #############          마트 정보            ############# -->
+	
+<!-- 오너 번호로 마켓 정보 가져오기 -->
+	<select id="getAddedMartList" parameterType="string" resultType="MartVO">
+		SELECT MART_NUM, MART_OWNER_NUM, MART_BUSINESS_NUM, MART_NAME, MART_TEL, MART_ADDRESS,
+		MART_DELIVERY, MART_COVIDFUND, MART_LEVEL, MART_JOIN_DATE, MART_COMMISSION_COST, MART_FILE 
+		FROM TBL_MART JOIN TBL_MART_OWNER
+		USING(MART_OWNER_NUM)
+	</select>
+
+	<!-- 마트 삭제 -->
+	<delete id="deleteMart" parameterType="_int">
+		DELETE FROM TBL_MART
+		WHERE MART_NUM = #{mart_num}
+	</delete>
+	
+	<!-- 마트 정보 수정 -->
+	<update id="updateMartDetail" parameterType="_int">
+	UPDATE TBL_MART
+	SET MART_NAME = #{mart_name}, MART_TEL = #{mart_tel}
+	WHERE  MART_BUSINESS_NUM  = ${mart_business_num}	
+	</update>
+		
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

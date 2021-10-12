@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http//mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Shopping">
+	<select id="getList" parameterType="map" resultType="ShopItemVO">
+		SELECT
+		SHOPITEM_NUM, MART_NUM, SHOPITEM_NAME, SHOPITEM_COST, SHOPITEM_STOCK, SHOPITEM_FILE_NAME, MART_NAME
+		FROM
+		(SELECT ROWNUM R, S.* FROM
+		(SELECT * FROM TBL_SHOPITEM
+		ORDER BY SHOPITEM_NUM DESC) S)
+		WHERE R BETWEEN ${startRow} AND
+		${endRow}
+	</select>
+	
+	<select id="getTotal" resultType="_int">
+		SELECT COUNT(SHOPITEM_NUM) FROM
+		TBL_SHOPITEM
+	</select>
+	
+	<select id="getDetail" parameterType="_int" resultType="ShopItemVO">
+		SELECT SHOPITEM_NAME, SHOPITEM_COST, SHOPITEM_STOCK, SHOPITEM_NUM, SHOPITEM_FILE_NAME, MART_NAME 
+		FROM TBL_SHOPITEM WHERE SHOPITEM_NUM = ${shopitem_num}
+	</select>
+	
+	<!-- 해당 유저가 결제한 모든 구매내역 가져오기 -->
+	<select id="getPurchase" parameterType="string" resultType="map">
+		SELECT S.SHOPITEM_FILE_NAME, S.SHOPITEM_NAME, P.PURCHASE_NUM, P.PURCHASE_DATE, C.ITEM_CNT, P.PURCHASE_COST FROM TBL_CART C
+		JOIN (SELECT * FROM TBL_PURCHASE
+		WHERE USER_EMAIL = #{user_email}) P
+		ON C.CART_NUM = P.CART_NUM
+		JOIN TBL_SHOPITEM S
+		ON C.SHOPITEM_NUM = S.SHOPITEM_NUM
+		ORDER BY P.PURCHASE_DATE DESC
+	</select>
+	
+	<!-- 마트 검색 -->
+	<select id="getMartList" parameterType="string" resultType="MartVO">
+		SELECT MART_NUM, MART_OWNER_NUM, MART_BUSINESS_NUM, MART_NAME, MART_TEL, MART_ADDRESS, MART_DELIVERY, MART_COVIDFUND, MART_LEVEL, MART_JOIN_DATE, MART_COMMISSION_COST, MART_FILE FROM TBL_MART
+		WHERE MART_NAME LIKE '%'|| #{keyword} || '%'  AND MART_DELIVERY = 1
+	</select>
+	
+	<select id="getNickname" parameterType="string" resultType="string">
+		SELECT USER_NICKNAME FROM TBL_USER
+		WHERE USER_EMAIL = #{user_email}
+	</select>
+	
+	<!-- 각마트의 상품목록 -->
+	<select id="getMartItemList" parameterType="map" resultType="ShopItemVO">
+        SELECT
+        SHOPITEM_NUM, MART_NUM, SHOPITEM_NAME, SHOPITEM_COST, SHOPITEM_STOCK, SHOPITEM_FILE_NAME, MART_NAME
+        FROM
+        (SELECT ROWNUM R, S.* FROM
+        (SELECT * FROM TBL_SHOPITEM
+        ORDER BY SHOPITEM_NUM DESC) S)
+        WHERE R BETWEEN ${startRow} AND ${endRow} AND MART_NUM=${martNum}
+    </select>
+    
+    <!-- 마트이름가져오기 -->
+    <select id="getMartName" parameterType="_int" resultType="string">
+    	SELECT MART_NAME FROM TBL_MART
+		WHERE MART_NUM=${martNum}
+    </select>
+    
+	<select id="getItemSearchList" parameterType="_int" resultType="ShopItemVO">
+		SELECT
+        SHOPITEM_NUM, MART_NUM, SHOPITEM_NAME, SHOPITEM_COST, SHOPITEM_STOCK, SHOPITEM_FILE_NAME, MART_NAME
+        FROM
+        (SELECT ROWNUM R, S.* FROM
+        (SELECT * FROM TBL_SHOPITEM
+        ORDER BY SHOPITEM_NUM DESC) S)
+        WHERE R BETWEEN ${startRow} AND ${endRow} AND MART_NAME = '${martName}' AND SHOPITEM_NAME LIKE '%'|| '${keyword}' || '%'
+	</select>
+	<select id="getUserNum" parameterType="string" resultType="_int">
+		SELECT USER_NUM FROM TBL_USER WHERE USER_EMAIL = '${user_email}'
+	</select>
+	<insert id="cartInput" parameterType="CartVO">
+		INSERT INTO TBL_CART
+		(CART_NUM, USER_NUM, SHOPITEM_NUM, ITEM_CNT)
+		VALUES(CART_SEQ.NEXTVAL, ${user_num}, ${shopitem_num}, ${item_cnt})
+	</insert>
+	<select id="cartList" parameterType="_int" resultType="CartVO">
+		SELECT CART_NUM, SHOPITEM_NUM, ITEM_CNT
+		FROM TBL_CART WHERE USER_NUM = ${user_num} ORDER BY CART_NUM DESC
+	</select>
+	<update id="updateStock" parameterType="ShopItemVO">
+		UPDATE TBL_SHOPITEM
+		SET SHOPITEM_STOCK = ${shopitem_stock}
+		WHERE SHOPITEM_NUM = ${shopitem_num}
+	</update>
+	<delete id="deleteCart" parameterType="_int">
+		DELETE FROM HR.TBL_CART
+		WHERE CART_NUM=${cart_num}
+	</delete>
+	<select id="searchCart" parameterType="CartVO" resultType="_int">
+		SELECT COUNT(SHOPITEM_NUM)
+		FROM TBL_CART WHERE USER_NUM = ${user_num} AND SHOPITEM_NUM = ${shopitem_num} 
+	</select>
+	<select id="getItemCnt" parameterType="CartVO" resultType="_int">
+		SELECT ITEM_CNT
+		FROM TBL_CART WHERE USER_NUM = ${user_num} AND SHOPITEM_NUM = ${shopitem_num}
+	</select>
+	<update id="addCartNum" parameterType="CartVO">
+		UPDATE TBL_CART
+		SET ITEM_CNT=${item_cnt}
+		WHERE SHOPITEM_NUM =${shopitem_num} AND USER_NUM = ${user_num}
+	</update>
+	
+	<!-- 지역별 마트 -->
+	<select id="getChoiceAreaList" parameterType="string" resultType="MartVO">
+		SELECT MART_NUM, MART_OWNER_NUM, MART_BUSINESS_NUM, MART_NAME, MART_TEL, MART_ADDRESS, MART_DELIVERY, MART_COVIDFUND, MART_LEVEL, MART_JOIN_DATE, MART_COMMISSION_COST, MART_FILE FROM TBL_MART
+		WHERE MART_ADDRESS LIKE #{area} || '%' AND MART_DELIVERY = 1
+	</select>
+	
+	<!-- 재난 지원금 -->
+	<select id="getCovidList" parameterType="string" resultType="MartVO" >
+		SELECT MART_NUM, MART_OWNER_NUM, MART_BUSINESS_NUM, MART_NAME, MART_TEL, MART_ADDRESS, MART_DELIVERY, MART_COVIDFUND, MART_LEVEL, MART_JOIN_DATE, MART_COMMISSION_COST, MART_FILE FROM TBL_MART
+		WHERE MART_COVIDFUND = 1 AND MART_ADDRESS LIKE #{area} || '%' AND MART_DELIVERY = 1
+	</select>
+	
+	<!-- 최근등록순 -->
+	<select  id="getUpdateList" parameterType="string" resultType="MartVO" >
+		SELECT MART_NUM, MART_OWNER_NUM, MART_BUSINESS_NUM, MART_NAME, MART_TEL, MART_ADDRESS, MART_DELIVERY, MART_COVIDFUND, MART_LEVEL, MART_JOIN_DATE, MART_COMMISSION_COST, MART_FILE FROM TBL_MART
+		WHERE MART_ADDRESS LIKE #{area} || '%' AND MART_DELIVERY = 1
+		ORDER BY MART_JOIN_DATE DESC
+	</select>
+</mapper>

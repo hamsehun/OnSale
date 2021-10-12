@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http//mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OwnerBoard">
+	<select id="getOwnerBoardList" parameterType="map"
+		resultType="OwnerBoardVO">
+		SELECT OWNER_BOARD_NUM, MART_NAME, OWNER_BOARD_TITLE, OWNER_BOARD_CONTENT,
+		OWNER_BOARD_DATE, OWNER_BOARD_VIEWS
+		FROM
+		(SELECT ROWNUM R, B. OWNER_BOARD_NUM, MART_NAME, OWNER_BOARD_TITLE, OWNER_BOARD_CONTENT,
+		OWNER_BOARD_DATE, OWNER_BOARD_VIEWS
+		FROM
+		(SELECT OWNER_BOARD_NUM, MART_NAME, OWNER_BOARD_TITLE, OWNER_BOARD_CONTENT,
+		OWNER_BOARD_DATE, OWNER_BOARD_VIEWS
+		FROM TBL_OWNER_BOARD ORDER BY OWNER_BOARD_NUM DESC) B)
+		WHERE R BETWEEN ${startRow} AND ${endRow}
+	</select>
+
+	<!-- 총 게시글 수 -->
+	<select id="getOwnerBoardTotal" resultType="_int">
+		SELECT
+		COUNT(OWNER_BOARD_NUM) FROM TBL_OWNER_BOARD
+	</select>
+
+	<!-- 게시글 작성하기 -->
+	<insert id="insertOwnerBoard" parameterType="OwnerBoardVO">
+		INSERT INTO TBL_OWNER_BOARD
+		(OWNER_BOARD_NUM, MART_NAME, OWNER_BOARD_TITLE, OWNER_BOARD_CONTENT,
+		OWNER_BOARD_DATE, OWNER_BOARD_VIEWS)
+		VALUES(USER_BOARD_SEQ.NEXTVAL, #{mart_name}, #{owner_board_title}, #{owner_board_content},
+		SYSDATE, 0);
+	</insert>
+
+	<select id="getOwnerSeq" resultType="_int">
+		SELECT 	OWNER_BOARD_SEQ.CURRVAL
+		FROM DUAL
+	</select>
+	<!-- 게시글 정보 -->
+	<select id="getOwnerDetail" parameterType="_int"
+		resultType="OwnerBoardVO">
+		SELECT OWNER_BOARD_NUM, MART_NAME, OWNER_BOARD_TITLE, OWNER_BOARD_CONTENT,
+		OWNER_BOARD_DATE, OWNER_BOARD_VIEWS
+		FROM TBL_OWNER_BOARD WHERE
+		OWNER_BOARD_NUM = #{owner_board_num}
+	</select>
+	<!--게시글 수정 -->
+	<update id="ownerUpdate" parameterType="OwnerBoardVO">
+		UPDATE TBL_OWNER_BOARD
+		SET
+		OWNER_BOARD_TITLE = #{owner_board_title}, OWNER_BOARD_CONTENT =
+		#{owner_board_content}
+		WHERE OWNER_BOARD_NUM = #{owner_board_num}
+	</update>
+	<!-- 조회수 늘어나기 -->
+	<update id="updateOwnerView" parameterType="_int">
+		UPDATE TBL_OWNER_BOARD
+		SET OWNER_BOARD_VIEWS = OWNER_BOARD_VIEWS + 1
+		WHERE OWNER_BOARD_NUM =
+		#{owner_board_num}
+	</update>
+	<!-- 게시글 삭제 -->
+	<delete id="deleteOwnerBoard" parameterType="_int">
+		DELETE FROM
+		TBL_OWNER_BOARD
+		WHERE OWNER_BOARD_NUM = #{owner_board_num}
+	</delete>	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

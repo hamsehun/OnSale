@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.onsale.app.user.vo.UserVO" alias="UserVO"/>
+		<typeAlias type="com.onsale.app.user.vo.FavoriteVO" alias="FavoriteVO"/>
+		<typeAlias type="com.onsale.app.board.vo.OwnerBoardVO" alias="OwnerBoardVO"/>
+		<typeAlias type="com.onsale.app.board.vo.UserBoardVO" alias="UserBoardVO"/>
+		<typeAlias type="com.onsale.app.board.vo.OwnerFilesVO" alias="OwnerFilesVO"/>
+		<typeAlias type="com.onsale.app.board.vo.UserFilesVO" alias="UserFilesVO"/>
+		<typeAlias type="com.onsale.app.board.vo.UserBoardReplyVO" alias="UserBoardReplyVO"/>
+		<typeAlias type="com.onsale.app.owner.vo.MartVO" alias="MartVO"/>
+		<typeAlias type="com.onsale.app.owner.vo.OwnerVO" alias="OwnerVO"/>
+		<typeAlias type="com.onsale.app.owner.vo.ReceiptVO" alias="ReceiptVO"/>
+		<typeAlias type="com.onsale.app.owner.vo.ShopItemVO" alias="ShopItemVO"/>
+		<typeAlias type="com.onsale.app.shopping.vo.CartVO" alias="CartVO"/>
+		<typeAlias type="com.onsale.app.shopping.vo.DeliveryVO" alias="DeliveryVO"/>
+		<typeAlias type="com.onsale.app.shopping.vo.ItemReviewVO" alias="ItemReviewVO"/>
+		<typeAlias type="com.onsale.app.shopping.vo.PurchaseVO" alias="PurchaseVO"/>
+	</typeAliases>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC"/>
+			<dataSource type="POOLED">
+				<property name="driver" value="oracle.jdbc.OracleDriver"/>
+				<property name="url" value="jdbc:oracle:thin:@localhost:1521:XE"/>
+				<property name="username" value="hr"/>
+				<property name="password" value="hr"/>
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<mappers>
+		<mapper resource="com/onsale/mybatis/sql/itemReview.xml"/>
+		<mapper resource="com/onsale/mybatis/sql/owner.xml"/>
+		<mapper resource="com/onsale/mybatis/sql/ownerBoard.xml"/>
+		<mapper resource="com/onsale/mybatis/sql/ownerBoardFiles.xml"/>
+		<mapper resource="com/onsale/mybatis/sql/shopping.xml"/>
+		<mapper resource="com/onsale/mybatis/sql/user.xml"/>
+		<mapper resource="com/onsale/mybatis/sql/userBoard.xml"/>
+		<mapper resource="com/onsale/mybatis/sql/userBoardFiles.xml"/>
+		<mapper resource="com/onsale/mybatis/sql/martSearch.xml"/>
+	</mappers>
+</configuration>
+
+
+
+
+
+
+
+
+
+
+
+
+
